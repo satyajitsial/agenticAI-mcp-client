@@ -1,0 +1,8 @@
+msgpack
+gevent
+openai
+httpx
+kong-pdk
+requests
+openai-agents
+requests

@@ -41,6 +41,15 @@ $ python3 -m pip install -r /usr/local/kong/python-plugins/requirements.txt
 ```bash
 $ kong restart
 ```
+### Install mongo database and Ensure MCP Server is Running
+
+```bash
+$ docker run --name mongodb -p 27017:27017 -d mongo:latest
+$ npx -y mongodb-mcp-server@latest --transport http
+$ git clone https://github.com/mongodb-js/mongodb-mcp-server
+$ npm install --save-dev rimraf
+```
+
 # Configuration Reference
 
 ## Enable the plugin on a Consumer
@@ -48,11 +57,20 @@ $ kong restart
 ### Admin-API
 For example, configure this plugin on a consumer by making the following request:
 ```	bash	
-  curl -i -X POST http://localhost:8001/plugins \
-  --data "name=agenticAI-mcp-client" \
-  --data "config.instructions=Translate natural language into MongoDB queries.Use the MongoDB MCP tools to run the queries.Explain results clearly and in human-readable form The DB name is testdb.Return the full query result as JSON without truncating. The connection string for mongodb is <MONGO_CONNECTION_STRIN>
- " \
-  --data "config.Message=Give the name of users in the users collection whose age>= 30" \
-  --data "config.Mcp Servers=MongoDB MCP Server" \
-  --data "config.Urls=http://localhost:3000"
+  curl -i -X POST http://localhost:8001/plugins --data "name=agenticAI-mcp-client" --data "config.instructions=Translate natural language into MongoDB queries.Use the MongoDB MCP tools to run the queries.Explain results clearly and in human-readable form The DB name is testdb.Return the full query result as JSON without truncating. The connection string for mongodb is <MONGO_CONNECTION_STRING>" --data "config.message=Give the name of users in the users collection whose age>= 30" --data "config.mcp_servers=MongoDB MCP Server" --data "config.urls=<MCP_SERVER_HOST>"
 ```
+
+## Parameters
+
+| FORM PARAMETER	     														| DESCRIPTION										  													|
+| ----------- 																		| -----------																								|
+| name<br>Type:string  														|  The name of the plugin to use, in this case agenticAI-mcp-client
+ |										  |
+| config.instructions<br>Type:string              |  System Prompt for Agents|
+| config.message<br>Type:string              |  Reporting queries for Mongo|
+| config.mcp_servers<br>Type:string              |  Name MCP Server|
+| config.urls<br>Type:string              |  URL of MCP Server|
+
+## Contributors
+Developed By : AshalP@verifone.com , AkashA@verifone.com<br>
+Designed By  : SatyajitS3@verifone.com, Prema.Namasivayam@verifone.com , RitikB1@verifone.com

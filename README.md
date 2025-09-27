@@ -41,3 +41,18 @@ $ python3 -m pip install -r /usr/local/kong/python-plugins/requirements.txt
 ```bash
 $ kong restart
 ```
+# Configuration Reference
+
+## Enable the plugin on a Consumer
+
+### Admin-API
+For example, configure this plugin on a consumer by making the following request:
+```	bash	
+  curl -i -X POST http://localhost:8001/plugins \
+  --data "name=agenticAI-mcp-client" \
+  --data "config.instructions=Translate natural language into MongoDB queries.Use the MongoDB MCP tools to run the queries.Explain results clearly and in human-readable form The DB name is testdb.Return the full query result as JSON without truncating. The connection string for mongodb is <MONGO_CONNECTION_STRIN>
+ " \
+  --data "config.Message=Give the name of users in the users collection whose age>= 30" \
+  --data "config.Mcp Servers=MongoDB MCP Server" \
+  --data "config.Urls=http://localhost:3000"
+```

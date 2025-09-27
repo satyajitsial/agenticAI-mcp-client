@@ -19,6 +19,16 @@ $ cp agenticAI-mcp-client.py /usr/local/kong/python-plugins
 $ git clone https://github.com/Kong/kong-python-pdk.git
 $ copy kong-python-pdk /usr/local/src/
 ```
+### Setting up Kong Conf File
+```bash
+$ plugins = bundled,agenticAI-mcp-client
+$ custom_plugins_enabled = on
+$ pluginserver_names = agenticAI-mcp-client
+$ pluginserver_my_plugin_socket = /usr/local/kong/python_pluginserver.sock
+$ pluginserver_my_plugin_start_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins
+$ pluginserver_my_plugin_query_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins --dump-all-plugins
+```
+
 ### Create .env file to add openAPIKey
 ```bash
 $ vi /usr/local/kong/python-plugins/.env

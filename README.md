@@ -21,12 +21,12 @@ $ copy kong-python-pdk /usr/local/src/
 ```
 ### Setting up Kong Conf File
 ```bash
-$ plugins = bundled,agenticAI-mcp-client
-$ custom_plugins_enabled = on
-$ pluginserver_names = agenticAI-mcp-client
-$ pluginserver_my_plugin_socket = /usr/local/kong/python_pluginserver.sock
-$ pluginserver_my_plugin_start_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins
-$ pluginserver_my_plugin_query_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins --dump-all-plugins
+ plugins = bundled,agenticai-mcp-client
+ custom_plugins_enabled = on
+ pluginserver_names = agenticai-mcp-client
+ pluginserver_agenticai_mcp_client_socket = /usr/local/kong/python_pluginserver.sock
+ pluginserver_agenticai_mcp_client_start_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins
+ pluginserver_agenticai_mcp_client_query_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins --dump-all-plugins
 ```
 
 ### Create .env file to add openAPIKey
@@ -110,7 +110,6 @@ Authorization: Bearer <access_token>
 ```
  
 ---
-
 ## Contributors
 Developed By : AshalP@verifone.com , AkashA@verifone.com<br>
 Designed By  : SatyajitS3@verifone.com, Prema.Namasivayam@verifone.com , RitikB1@verifone.com

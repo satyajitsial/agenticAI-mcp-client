@@ -121,4 +121,3 @@ if len(sys.argv) > 1 and sys.argv[1] in ("--dump", "--dump-all-plugins"):
         )
     )
     sys.exit(0)
-

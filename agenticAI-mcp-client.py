@@ -5,19 +5,17 @@ import os
 from dotenv import load_dotenv
 import kong_pdk.pdk.kong as kong  # Kong Python PDK
 
-# Agent libraries (lightweight, no TensorFlow)
+# Agent libraries
 from agents import Agent, Runner
 from agents.mcp import MCPServerStreamableHttp
 from agents.model_settings import ModelSettings
 
-# Load environment variables (OPENAI_API_KEY etc.)
+# Load environment variables (e.g. OPENAI_API_KEY)
 load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
-
 # Plugin schema
 Schema = [
-    {"message": {"type": "string"}},
     {"instructions": {"type": "string"}},
     {"mcp_servers": {"type": "array", "elements": {"type": "string"}}},
     {"urls": {"type": "array", "elements": {"type": "string"}}},
@@ -33,64 +31,50 @@ class Plugin:
         self.config = config
 
     def access(self, kong_instance):
-        message = self.config.get("message", "Hello from my-plugin!")
         instructions = self.config.get("instructions", "")
         mcp_servers = self.config.get("mcp_servers", ["Fraud MCP Server"])
         urls = self.config.get("urls", ["http://localhost:4000/mcp"])
         authorization = self.config.get("authorization", "")
 
-        kong_instance.log.info(f"Running agent with message: {message}")
-        kong_instance.log.info(f"Instructions: {instructions}")
-        kong_instance.log.info(f"MCP servers: {mcp_servers}, URLs: {urls}")
+        kong_instance.log.info(f"[agenticAI-mcp-client] Instructions: {instructions}")
+        kong_instance.log.info(f"[agenticAI-mcp-client] MCP servers: {mcp_servers}, URLs: {urls}")
 
-        # Capture request payload
+        # --- Capture request payload ---
         body, err = kong_instance.request.get_raw_body()
         if err:
-            kong_instance.log.err(f"Error reading request body: {err}")
+            kong_instance.log.err(f"[agenticAI-mcp-client] Error reading request body: {err}")
             payload = {}
         else:
             try:
                 payload = json.loads(body) if body else {}
             except json.JSONDecodeError:
-                payload = {"raw": body}
+                kong_instance.log.err("[agenticAI-mcp-client] Non-JSON payload received")
+                payload = {"raw": body.decode("utf-8") if isinstance(body, bytes) else str(body)}
+
+        # ✅ Message comes only from payload
+        message = json.dumps({"payload": payload})
 
         try:
-            # Combine message + payload for agent
-            combined_message = json.dumps({"message": message, "payload": payload})
-
-            # Run async agent logic
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             agent_response = loop.run_until_complete(
-                self.run_agent_logic(
-                    combined_message, instructions, mcp_servers, urls, authorization
-                )
+                self.run_agent_logic(message, instructions, mcp_servers, urls, authorization)
             )
         except Exception as e:
-            kong_instance.log.err(f"Error in agent logic: {e}")
+            kong_instance.log.err(f"[agenticAI-mcp-client] Error in agent logic: {e}")
             agent_response = "Agent execution failed."
 
-        # Send response back to client
+        # --- Send response back to client ---
         kong_instance.response.exit(
             200,
-            json.dumps(
-                {
-                    "message": message,
-                    "instructions": instructions,
-                    "request_payload": payload,
-                    "agent_response": agent_response,
-                }
-            ),
+            json.dumps({"agent_response": agent_response}),
             {"Content-Type": "application/json"},
         )
 
-    async def run_agent_logic(
-        self, message, instructions, mcp_servers, urls, authorization
-    ):
+    async def run_agent_logic(self, message, instructions, mcp_servers, urls, authorization):
         if len(mcp_servers) != len(urls):
             raise ValueError("mcp_servers and urls must be the same length")
 
-        # Open MCP server connections
         servers = []
         for name, url in zip(mcp_servers, urls):
             server = MCPServerStreamableHttp(
@@ -104,7 +88,6 @@ class Plugin:
             servers.append(server)
 
         try:
-            # Run agent with MCP servers
             agent = Agent(
                 name="Assistant",
                 instructions=instructions,
@@ -118,7 +101,6 @@ class Plugin:
 
             return result.final_output
         finally:
-            # Close all MCP servers
             for server in servers:
                 await server.__aexit__(None, None, None)
 
@@ -129,7 +111,7 @@ if len(sys.argv) > 1 and sys.argv[1] in ("--dump", "--dump-all-plugins"):
         json.dumps(
             [
                 {
-                    "name": "my-plugin",
+                    "name": "agenticAI-mcp-client",
                     "version": version,
                     "priority": priority,
                     "phases": ["access"],
@@ -139,3 +121,4 @@ if len(sys.argv) > 1 and sys.argv[1] in ("--dump", "--dump-all-plugins"):
         )
     )
     sys.exit(0)
+

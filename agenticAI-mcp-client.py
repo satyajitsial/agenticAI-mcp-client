@@ -75,9 +75,7 @@ class Plugin:
             200,
             json.dumps(
                 {
-                    "message": message,
-                    "instructions": instructions,
-                    "request_payload": payload,
+                   
                     "agent_response": agent_response,
                 }
             ),
@@ -139,3 +137,4 @@ if len(sys.argv) > 1 and sys.argv[1] in ("--dump", "--dump-all-plugins"):
         )
     )
     sys.exit(0)
+

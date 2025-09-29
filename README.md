@@ -21,12 +21,12 @@ $ copy kong-python-pdk /usr/local/src/
 ```
 ### Setting up Kong Conf File
 ```bash
-$ plugins = bundled,agenticai-mcp-client
-$ custom_plugins_enabled = on
-$ pluginserver_names = agenticai-mcp-client
-$ pluginserver_agenticai_mcp_client_socket = /usr/local/kong/python_pluginserver.sock
-$ pluginserver_agenticai_mcp_client_start_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins
-$ pluginserver_agenticai_mcp_client_query_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins --dump-all-plugins
+ plugins = bundled,agenticai-mcp-client
+ custom_plugins_enabled = on
+ pluginserver_names = agenticai-mcp-client
+ pluginserver_agenticai_mcp_client_socket = /usr/local/kong/python_pluginserver.sock
+ pluginserver_agenticai_mcp_client_start_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins
+ pluginserver_agenticai_mcp_client_query_cmd = python3 /usr/local/src/kong-python-pdk/kong-pluginserver.py -d /usr/local/kong/python-plugins --dump-all-plugins
 ```
 
 ### Create .env file to add openAPIKey
@@ -81,6 +81,35 @@ For example, configure this plugin on a consumer by making the following request
 | config.mcp_servers<br>Type:string              |  Name MCP Server|
 | config.urls<br>Type:string              |  URL of MCP Server|
 
+## Gmail MCP Integration (Optional)
+ 
+For sending fraud alerts via Gmail:
+ 
+```bash
+npx -y @gongrzhe/server-gmail-mcp --transport http
+```
+ 
+ 
+Expected output:
+ 
+```
+Stateless Gmail MCP Server listening on port 30000
+```
+ 
+Authenticate:
+ 
+**Note:** Requires OAuth setup in Google Cloud Console.
+```bash
+npx @gongrzhe/server-gmail-autoauth-mcp auth
+```
+ 
+This generates OAuth credentials. Use the access token in your plugin headers:
+ 
+```
+Authorization: Bearer <access_token>
+```
+ 
+---
 ## Contributors
 Developed By : AshalP@verifone.com , AkashA@verifone.com<br>
 Designed By  : SatyajitS3@verifone.com, Prema.Namasivayam@verifone.com , RitikB1@verifone.com

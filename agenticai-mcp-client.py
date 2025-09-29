@@ -36,19 +36,19 @@ class Plugin:
         urls = self.config.get("urls", ["http://localhost:4000/mcp"])
         authorization = self.config.get("authorization", "")
 
-        kong_instance.log.info(f"[agenticAI-mcp-client] Instructions: {instructions}")
-        kong_instance.log.info(f"[agenticAI-mcp-client] MCP servers: {mcp_servers}, URLs: {urls}")
+        kong_instance.log.info(f"[my-plugin] Instructions: {instructions}")
+        kong_instance.log.info(f"[my-plugin] MCP servers: {mcp_servers}, URLs: {urls}")
 
         # --- Capture request payload ---
         body, err = kong_instance.request.get_raw_body()
         if err:
-            kong_instance.log.err(f"[agenticAI-mcp-client] Error reading request body: {err}")
+            kong_instance.log.err(f"[my-plugin] Error reading request body: {err}")
             payload = {}
         else:
             try:
                 payload = json.loads(body) if body else {}
             except json.JSONDecodeError:
-                kong_instance.log.err("[agenticAI-mcp-client] Non-JSON payload received")
+                kong_instance.log.err("[my-plugin] Non-JSON payload received")
                 payload = {"raw": body.decode("utf-8") if isinstance(body, bytes) else str(body)}
 
         # ✅ Message comes only from payload
@@ -61,7 +61,7 @@ class Plugin:
                 self.run_agent_logic(message, instructions, mcp_servers, urls, authorization)
             )
         except Exception as e:
-            kong_instance.log.err(f"[agenticAI-mcp-client] Error in agent logic: {e}")
+            kong_instance.log.err(f"[my-plugin] Error in agent logic: {e}")
             agent_response = "Agent execution failed."
 
         # --- Send response back to client ---
@@ -111,7 +111,7 @@ if len(sys.argv) > 1 and sys.argv[1] in ("--dump", "--dump-all-plugins"):
         json.dumps(
             [
                 {
-                    "name": "agenticAI-mcp-client",
+                    "name": "my-plugin",
                     "version": version,
                     "priority": priority,
                     "phases": ["access"],
@@ -121,3 +121,4 @@ if len(sys.argv) > 1 and sys.argv[1] in ("--dump", "--dump-all-plugins"):
         )
     )
     sys.exit(0)
+

@@ -1,8 +1,8 @@
 # agenticAI-mcp-client
 ## Overview
-This Kong plugin provides integration with any MCP server. It accepts natural language (NL) input, translates it into a neural/structured query language using LLM-based agents, and invokes the MCP server through a client interface. The plugin then processes the server response and makes it available for downstream consumption or delivery to recipients.
+This Kong plugin provides integration with any MCP server. It accepts natural language (NL) input, translates it into a structured query language using LLM-based AI agents, and invokes the MCP server through a client interface. The plugin then processes the server response and makes it available for downstream consumption or delivery to recipients.
 
-Currently, the plugin supports Mongo MCP server and Gmail MCP server, enabling developers to easily handle reporting requirements across databases. It has the intelligence to automatically generate queries from natural language prompts and deliver the results via email, significantly reducing manual effort.## Tested in Kong Release
+Currently, the plugin supports Mongo MCP server and Gmail MCP server, enabling developers to easily handle reporting requirements across databases. It has the intelligence to automatically generate queries from natural language prompts and deliver the results via email, significantly reducing manual effort.
 
 ## Tested in Kong Release
 Kong Enterprise 3.11
